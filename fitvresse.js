@@ -316,9 +316,12 @@ function initAssistanteIA() {
 
   if (iaForm && iaInput && iaMessages) {
 
-    iaForm.addEventListener("submit", function(event) {
+       iaForm.addEventListener("submit", async function(event) {
 
       event.preventDefault();
+
+      // À MODIFIER : l'adresse de ton Worker Cloudflare
+      const URL_ASSISTANTE = "https://fitvresse-ia.TON-NOM.workers.dev";
 
       const question = iaInput.value.trim();
 
@@ -331,14 +334,39 @@ function initAssistanteIA() {
       messageUser.textContent = question;
       iaMessages.appendChild(messageUser);
 
+      iaForm.reset();
+
       const messageBot = document.createElement("p");
       messageBot.className = "ia-message ia-message-bot";
-      messageBot.textContent = genererReponse(question);
+      messageBot.textContent = "...";
       iaMessages.appendChild(messageBot);
+      iaMessages.scrollTop = iaMessages.scrollHeight;
+
+      try {
+
+        const response = await fetch(URL_ASSISTANTE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: question })
+        });
+
+        const data = await response.json();
+
+        messageBot.textContent = response.ok && data.reponse
+          ? data.reponse
+          : genererReponse(question);
+
+      } catch (erreur) {
+
+        // Si l'IA est indisponible, on garde tes réponses à mots-clés
+        messageBot.textContent = genererReponse(question);
+
+      }
 
       iaMessages.scrollTop = iaMessages.scrollHeight;
 
-      iaForm.reset();
+    });
+
 
     });
 
