@@ -7,6 +7,19 @@
    continue de tourner normalement.
 ========================================================= */
 
+/* =========================================================
+   SUPABASE — connexion à la base de données
+   Nécessite d'avoir ajouté, AVANT ce fichier, dans le HTML :
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+========================================================= */
+
+// À MODIFIER : remplace par ton Project URL et ta clé anon/publishable
+const SUPABASE_URL = "https://TON-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "TA-CLE-ANON";
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
 document.addEventListener("DOMContentLoaded", function() {
 
   initCookies();
@@ -262,6 +275,9 @@ function initAssistanteIA() {
   // Adresse du Worker Cloudflare
   const URL_ASSISTANTE = "https://fitvresse-ia.mariamsacko-dev.workers.dev";
 
+  // Mémoire de la conversation en cours (effacée quand on recharge la page)
+  const historique = [];
+
   const regles = [
     {
       motsCles: ["nutrition", "sante", "santé", "nourriture", "manger", "alimentation", "repas"],
@@ -349,19 +365,31 @@ function initAssistanteIA() {
         const response = await fetch(URL_ASSISTANTE, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: question })
+          body: JSON.stringify({
+            question: question,
+            historique: historique.slice(-6)
+          })
         });
 
         const data = await response.json();
 
-        messageBot.textContent = response.ok && data.reponse
-          ? data.reponse
-          : "[DEBUG " + response.status + "] " + (data.reponse || "") + " — " + genererReponse(question);
+        if (response.ok && data.reponse) {
+
+          messageBot.textContent = data.reponse;
+
+          historique.push({ role: "user", text: question });
+          historique.push({ role: "model", text: data.reponse });
+
+        } else {
+
+          messageBot.textContent = genererReponse(question);
+
+        }
 
       } catch (erreur) {
 
-        // DEBUG temporaire : à retirer quand l'IA fonctionne
-        messageBot.textContent = "[DEBUG réseau : " + erreur.message + "] " + genererReponse(question);
+        // Si l'IA est indisponible, on garde les réponses à mots-clés
+        messageBot.textContent = genererReponse(question);
 
       }
 
@@ -472,7 +500,7 @@ function initFormulaireRdv() {
 
 
 /* =========================================================
-   COMPTE — onglets connexion / inscription + redirection
+   COMPTE — connexion / inscription réelles avec Supabase
 ========================================================= */
 
 function initCompte() {
@@ -486,6 +514,7 @@ function initCompte() {
 
   const panneauConnexion = document.querySelector("#panneau-connexion");
   const panneauInscription = document.querySelector("#panneau-inscription");
+  const compteConfirmation = document.querySelector("#compte-confirmation");
 
   function afficherConnexion() {
     panneauConnexion.hidden = false;
@@ -504,17 +533,16 @@ function initCompte() {
   ongletConnexion.addEventListener("click", afficherConnexion);
   ongletInscription.addEventListener("click", afficherInscription);
 
-  /* Compte réservé à Sarah — à remplacer par une vraie authentification serveur */
-  const EMAIL_COACH = "sarah@fitvresse.fr";
+  // Redirige la personne selon son rôle (lu dans la table "profils")
+  async function redirigerSelonRole(userId) {
 
-  function ouvrirSession(prenom, role) {
+    const { data: profil } = await sb
+      .from("profils")
+      .select("role")
+      .eq("id", userId)
+      .single();
 
-    localStorage.setItem("fitvresse-session", JSON.stringify({
-      prenom: prenom,
-      role: role
-    }));
-
-    window.location.href = role === "coach"
+    window.location.href = (profil && profil.role === "coach")
       ? "espace-coach.html"
       : "espace-membre.html";
 
@@ -522,19 +550,36 @@ function initCompte() {
 
   if (panneauConnexion) {
 
-    panneauConnexion.addEventListener("submit", function(event) {
+    panneauConnexion.addEventListener("submit", async function(event) {
 
       event.preventDefault();
 
       const emailChamp = document.querySelector("#connexion-email");
-      const email = emailChamp ? emailChamp.value.trim().toLowerCase() : "";
+      const mdpChamp = document.querySelector("#connexion-mdp");
 
-      if (email === EMAIL_COACH) {
-        ouvrirSession("Sarah", "coach");
-        return;
+      const email = emailChamp ? emailChamp.value.trim() : "";
+      const mdp = mdpChamp ? mdpChamp.value : "";
+
+      if (compteConfirmation) {
+        compteConfirmation.textContent = "Connexion en cours...";
       }
 
-      ouvrirSession(email.split("@")[0] || "", "membre");
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: email,
+        password: mdp
+      });
+
+      if (error) {
+
+        if (compteConfirmation) {
+          compteConfirmation.textContent = "Email ou mot de passe incorrect.";
+        }
+
+        return;
+
+      }
+
+      await redirigerSelonRole(data.user.id);
 
     });
 
@@ -542,14 +587,60 @@ function initCompte() {
 
   if (panneauInscription) {
 
-    panneauInscription.addEventListener("submit", function(event) {
+    panneauInscription.addEventListener("submit", async function(event) {
 
       event.preventDefault();
 
       const prenomChamp = document.querySelector("#inscription-prenom");
-      const prenom = prenomChamp ? prenomChamp.value : "";
+      const emailChamp = document.querySelector("#inscription-email");
+      const mdpChamp = document.querySelector("#inscription-mdp");
 
-      ouvrirSession(prenom, "membre");
+      const prenom = prenomChamp ? prenomChamp.value.trim() : "";
+      const email = emailChamp ? emailChamp.value.trim() : "";
+      const mdp = mdpChamp ? mdpChamp.value : "";
+
+      if (compteConfirmation) {
+        compteConfirmation.textContent = "Création du compte...";
+      }
+
+      const { data, error } = await sb.auth.signUp({
+        email: email,
+        password: mdp
+      });
+
+      if (error) {
+
+        if (compteConfirmation) {
+          compteConfirmation.textContent = "Impossible de créer le compte : " + error.message;
+        }
+
+        return;
+
+      }
+
+      // Crée la ligne de profil associée (rôle "membre" par défaut)
+      if (data.user) {
+
+        await sb.from("profils").insert({
+          id: data.user.id,
+          prenom: prenom,
+          role: "membre"
+        });
+
+      }
+
+      // Si la confirmation par email est activée, il n'y a pas de session immédiate
+      if (!data.session) {
+
+        if (compteConfirmation) {
+          compteConfirmation.textContent = "Compte créé ! Vérifie tes emails pour confirmer ton adresse avant de te connecter.";
+        }
+
+        return;
+
+      }
+
+      window.location.href = "espace-membre.html";
 
     });
 
@@ -714,7 +805,7 @@ function initFaqChat() {
 
 
 /* =========================================================
-   ESPACES CONNECTÉS — vérification de session
+   ESPACES CONNECTÉS — vérification de session réelle (Supabase)
    (ne s'exécute que sur espace-membre.html / espace-coach.html)
 ========================================================= */
 
@@ -729,16 +820,46 @@ function initSessionEspace() {
     return;
   }
 
-  const sauvegarde = localStorage.getItem("fitvresse-session");
-  const session = sauvegarde ? JSON.parse(sauvegarde) : null;
+  const surPageCoach = !!btnDeconnexionCoach;
 
-  if (!session) {
-    window.location.href = "index.html#compte";
-    return;
+  async function verifierSession() {
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    if (!session) {
+      window.location.href = "index.html#compte";
+      return;
+    }
+
+    const { data: profil } = await sb
+      .from("profils")
+      .select("prenom, role")
+      .eq("id", session.user.id)
+      .single();
+
+    // Empêche une membre d'ouvrir l'espace coach, et inversement
+    if (surPageCoach && (!profil || profil.role !== "coach")) {
+      window.location.href = "espace-membre.html";
+      return;
+    }
+
+    if (!surPageCoach && profil && profil.role === "coach") {
+      window.location.href = "espace-coach.html";
+      return;
+    }
+
+    const membrePrenom = document.querySelector("#membre-prenom");
+
+    if (membrePrenom && profil) {
+      membrePrenom.textContent = profil.prenom || "";
+    }
+
   }
 
-  function deconnecter() {
-    localStorage.removeItem("fitvresse-session");
+  verifierSession();
+
+  async function deconnecter() {
+    await sb.auth.signOut();
     window.location.href = "index.html";
   }
 
@@ -750,17 +871,11 @@ function initSessionEspace() {
     btnDeconnexionCoach.addEventListener("click", deconnecter);
   }
 
-  const membrePrenom = document.querySelector("#membre-prenom");
-
-  if (membrePrenom) {
-    membrePrenom.textContent = session.prenom || "";
-  }
-
 }
 
 
 /* =========================================================
-   SUIVI DE PROGRESSION (espace-membre.html)
+   SUIVI DE PROGRESSION (espace-membre.html) — Supabase
 ========================================================= */
 
 function initSuiviProgression() {
@@ -774,18 +889,20 @@ function initSuiviProgression() {
   const suiviListe = document.querySelector("#suivi-liste");
   const suiviStats = document.querySelector("#suivi-stats");
 
-  function chargerSeances() {
-    const sauvegarde = localStorage.getItem("fitvresse-seances");
-    return sauvegarde ? JSON.parse(sauvegarde) : [];
+  async function chargerSeances() {
+
+    const { data, error } = await sb
+      .from("suivi_seances")
+      .select("*")
+      .order("date", { ascending: false });
+
+    return error ? [] : data;
+
   }
 
-  function afficher() {
+  async function afficher() {
 
-    const seances = chargerSeances();
-
-    seances.sort(function(a, b) {
-      return b.date.localeCompare(a.date);
-    });
+    const seances = await chargerSeances();
 
     if (suiviStats) {
 
@@ -860,7 +977,7 @@ function initSuiviProgression() {
 
   }
 
-  suiviForm.addEventListener("submit", function(event) {
+  suiviForm.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
@@ -875,16 +992,19 @@ function initSuiviProgression() {
     const ressentiChamp = document.querySelector("#suivi-ressenti");
     const noteChamp = document.querySelector("#suivi-note");
 
-    const seances = chargerSeances();
+    const { data: { session } } = await sb.auth.getSession();
 
-    seances.push({
+    if (!session) {
+      return;
+    }
+
+    await sb.from("suivi_seances").insert({
+      user_id: session.user.id,
       date: date,
       type: typeChamp ? typeChamp.value : "",
       ressenti: ressentiChamp ? ressentiChamp.value : "",
       note: noteChamp ? noteChamp.value.trim() : ""
     });
-
-    localStorage.setItem("fitvresse-seances", JSON.stringify(seances));
 
     suiviForm.reset();
 
@@ -898,7 +1018,7 @@ function initSuiviProgression() {
 
 
 /* =========================================================
-   MON PROFIL (espace-membre.html)
+   MON PROFIL (espace-membre.html) — Supabase
 ========================================================= */
 
 function initProfil() {
@@ -914,39 +1034,64 @@ function initProfil() {
   const champs = {
     objectif: document.querySelector("#profil-objectif"),
     niveau: document.querySelector("#profil-niveau"),
-    seances: document.querySelector("#profil-seances"),
+    seances_semaine: document.querySelector("#profil-seances"),
     alimentation: document.querySelector("#profil-alimentation"),
     notes: document.querySelector("#profil-notes")
   };
 
-  const sauvegarde = localStorage.getItem("fitvresse-profil");
+  async function precharger() {
 
-  if (sauvegarde) {
+    const { data: { session } } = await sb.auth.getSession();
 
-    const profil = JSON.parse(sauvegarde);
+    if (!session) {
+      return;
+    }
+
+    const { data: profil } = await sb
+      .from("profils")
+      .select("objectif, niveau, seances_semaine, alimentation, notes")
+      .eq("id", session.user.id)
+      .single();
+
+    if (!profil) {
+      return;
+    }
 
     Object.keys(champs).forEach(function(cle) {
-      if (champs[cle] && profil[cle] !== undefined) {
+      if (champs[cle] && profil[cle] !== null && profil[cle] !== undefined) {
         champs[cle].value = profil[cle];
       }
     });
 
   }
 
-  profilForm.addEventListener("submit", function(event) {
+  precharger();
+
+  profilForm.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
-    const profil = {};
+    const { data: { session } } = await sb.auth.getSession();
+
+    if (!session) {
+      return;
+    }
+
+    const misesAJour = {};
 
     Object.keys(champs).forEach(function(cle) {
-      profil[cle] = champs[cle] ? champs[cle].value : "";
+      misesAJour[cle] = champs[cle] ? champs[cle].value : "";
     });
 
-    localStorage.setItem("fitvresse-profil", JSON.stringify(profil));
+    const { error } = await sb
+      .from("profils")
+      .update(misesAJour)
+      .eq("id", session.user.id);
 
     if (profilConfirmation) {
-      profilConfirmation.textContent = "Ton profil est enregistré.";
+      profilConfirmation.textContent = error
+        ? "Une erreur est survenue, réessaie."
+        : "Ton profil est enregistré.";
     }
 
   });
@@ -955,7 +1100,8 @@ function initProfil() {
 
 
 /* =========================================================
-   ESPACE COACH (espace-coach.html)
+   ESPACE COACH (espace-coach.html) — Supabase
+   Le coach choisit une cliente parmi les membres inscrites.
 ========================================================= */
 
 function initEspaceCoach() {
@@ -968,23 +1114,47 @@ function initEspaceCoach() {
 
   const coachConfirmation = document.querySelector("#coach-confirmation");
   const coachListe = document.querySelector("#coach-liste");
+  const clienteChamp = document.querySelector("#coach-cliente");
 
-  function chargerProgrammes() {
-    const sauvegarde = localStorage.getItem("fitvresse-programmes");
-    return sauvegarde ? JSON.parse(sauvegarde) : [];
+  // Remplit la liste des clientes si #coach-cliente est un <select>
+  async function chargerClientes() {
+
+    if (!clienteChamp || clienteChamp.tagName !== "SELECT") {
+      return;
+    }
+
+    const { data: clientes } = await sb
+      .from("profils")
+      .select("id, prenom")
+      .eq("role", "membre");
+
+    clienteChamp.innerHTML = '<option value="">Choisir une cliente</option>';
+
+    (clientes || []).forEach(function(cliente) {
+
+      const option = document.createElement("option");
+      option.value = cliente.id;
+      option.textContent = cliente.prenom || "(sans prénom)";
+      clienteChamp.appendChild(option);
+
+    });
+
   }
 
-  function afficher() {
+  async function afficher() {
 
     if (!coachListe) {
       return;
     }
 
-    const programmes = chargerProgrammes();
+    const { data: programmes } = await sb
+      .from("programmes")
+      .select("cliente_prenom, programme")
+      .order("created_at", { ascending: false });
 
     coachListe.innerHTML = "";
 
-    if (programmes.length === 0) {
+    if (!programmes || programmes.length === 0) {
 
       const vide = document.createElement("p");
       vide.className = "coach-vide";
@@ -1000,7 +1170,7 @@ function initEspaceCoach() {
       const item = document.createElement("li");
 
       const titre = document.createElement("strong");
-      titre.textContent = programme.cliente;
+      titre.textContent = programme.cliente_prenom;
 
       const detail = document.createElement("span");
       detail.textContent = programme.programme || "Programme à compléter";
@@ -1014,35 +1184,47 @@ function initEspaceCoach() {
 
   }
 
-  coachForm.addEventListener("submit", function(event) {
+  coachForm.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
-    const clienteChamp = document.querySelector("#coach-cliente");
-    const cliente = clienteChamp ? clienteChamp.value.trim() : "";
-
-    if (!cliente) {
-      if (coachConfirmation) {
-        coachConfirmation.textContent = "Merci d'indiquer le prénom de la cliente.";
-      }
+    if (!clienteChamp) {
       return;
+    }
+
+    // Si #coach-cliente est un select : sa valeur est l'id de la cliente.
+    // Si c'est encore un champ texte, on ne peut pas la relier à un vrai
+    // compte — voir la note envoyée avec ce fichier.
+    const estSelect = clienteChamp.tagName === "SELECT";
+    const clienteId = estSelect ? clienteChamp.value : "";
+    const clientePrenom = estSelect
+      ? (clienteChamp.selectedOptions[0] ? clienteChamp.selectedOptions[0].textContent : "")
+      : clienteChamp.value.trim();
+
+    if (!clienteId || !clientePrenom) {
+
+      if (coachConfirmation) {
+        coachConfirmation.textContent = "Merci de choisir une cliente dans la liste.";
+      }
+
+      return;
+
     }
 
     const programmeChamp = document.querySelector("#coach-programme");
     const nutritionChamp = document.querySelector("#coach-nutrition");
 
-    const programmes = chargerProgrammes();
-
-    programmes.push({
-      cliente: cliente,
+    const { error } = await sb.from("programmes").insert({
+      cliente_id: clienteId,
+      cliente_prenom: clientePrenom,
       programme: programmeChamp ? programmeChamp.value.trim() : "",
       nutrition: nutritionChamp ? nutritionChamp.value.trim() : ""
     });
 
-    localStorage.setItem("fitvresse-programmes", JSON.stringify(programmes));
-
     if (coachConfirmation) {
-      coachConfirmation.textContent = "Programme enregistré pour " + cliente + ".";
+      coachConfirmation.textContent = error
+        ? "Une erreur est survenue, réessaie."
+        : "Programme enregistré pour " + clientePrenom + ".";
     }
 
     coachForm.reset();
@@ -1051,6 +1233,7 @@ function initEspaceCoach() {
 
   });
 
+  chargerClientes();
   afficher();
 
 }
