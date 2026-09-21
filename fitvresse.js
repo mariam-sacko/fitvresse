@@ -240,7 +240,9 @@ function initModaleVideo() {
 
 
 /* =========================================================
-   ASSISTANTE IA (placeholder à mots-clés, pas connectée à une vraie API)
+   ASSISTANTE IA
+   Appelle le Worker Cloudflare (qui garde la clé Gemini secrète).
+   Si l'IA est indisponible, les réponses à mots-clés prennent le relais.
 ========================================================= */
 
 function initAssistanteIA() {
@@ -256,6 +258,9 @@ function initAssistanteIA() {
   const iaForm = document.querySelector("#ia-form");
   const iaInput = document.querySelector("#ia-input");
   const iaMessages = document.querySelector("#ia-messages");
+
+  // Adresse du Worker Cloudflare
+  const URL_ASSISTANTE = "https://fitvresse-ia.mariamsacko-dev.workers.dev";
 
   const regles = [
     {
@@ -284,7 +289,7 @@ function initAssistanteIA() {
 
     return regle
       ? regle.reponse
-      : "Merci pour ta question ! Cette assistante n'est pas encore connectée à une vraie IA — pose-moi une question sur le sport, la nutrition ou la prise de rendez-vous, je peux déjà t'orienter.";
+      : "Merci pour ta question ! Je ne peux pas te répondre pour le moment. Pose-moi une question sur le sport, la nutrition ou la prise de rendez-vous, ou écris à contact@fitvresse.fr.";
 
   }
 
@@ -316,12 +321,9 @@ function initAssistanteIA() {
 
   if (iaForm && iaInput && iaMessages) {
 
-       iaForm.addEventListener("submit", async function(event) {
+    iaForm.addEventListener("submit", async function(event) {
 
       event.preventDefault();
-
-      // À MODIFIER : l'adresse de ton Worker Cloudflare
-      const URL_ASSISTANTE = "https://fitvresse-ia.mariamsacko-dev.workers.dev";
 
       const question = iaInput.value.trim();
 
@@ -358,15 +360,12 @@ function initAssistanteIA() {
 
       } catch (erreur) {
 
-        // Si l'IA est indisponible, on garde tes réponses à mots-clés
+        // Si l'IA est indisponible, on garde les réponses à mots-clés
         messageBot.textContent = genererReponse(question);
 
       }
 
       iaMessages.scrollTop = iaMessages.scrollHeight;
-
-    });
-
 
     });
 
@@ -734,13 +733,13 @@ function initSessionEspace() {
   const session = sauvegarde ? JSON.parse(sauvegarde) : null;
 
   if (!session) {
-    window.location.href = "fitvresse.html#compte";
+    window.location.href = "index.html#compte";
     return;
   }
 
   function deconnecter() {
     localStorage.removeItem("fitvresse-session");
-    window.location.href = "fitvresse.html";
+    window.location.href = "index.html";
   }
 
   if (btnDeconnexion) {
@@ -1055,3 +1054,6 @@ function initEspaceCoach() {
   afficher();
 
 }
+
+
+    
