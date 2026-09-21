@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mon espace — Fitvresse</title>
+
+    <meta name="description" content="Espace personnel Fitvresse : programmes, exercices, suivi de progression et profil.">
+    <meta name="robots" content="noindex">
+
+    <link rel="stylesheet" href="fitvresse.css">
+</head>
+
+<body>
+
+    <header class="header">
+
+        <a href="fitvresse.html" class="logo">Fitvresse</a>
+
+        <div class="header-actions">
+            <a href="fitvresse.html" class="compte-link">Retour au site</a>
+            <button type="button" class="rdv-link" id="btn-deconnexion">Se déconnecter</button>
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <section class="espace-membre" id="espace-membre">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="petit-titre">ESPACE MEMBRE</p>
+                    <h2>Bienvenue <span id="membre-prenom"></span></h2>
+                </div>
+
+                <p>
+                    Retrouve tes programmes, tes exercices et ton suivi.
+                </p>
+
+            </div>
+
+            <div class="modules-grid">
+
+                <article class="module-card">
+                    <h3>Mes programmes</h3>
+                    <p>Retrouve les entraînements que Sarah t'a préparés.</p>
+                </article>
+
+                <article class="module-card">
+
+                    <h3>Exercices</h3>
+                    <p>La bibliothèque complète d'exercices expliqués en vidéo.</p>
+
+                    <div class="video-grid">
+
+                        <div class="video-placeholder" role="button" tabindex="0" data-exercise="Squat">
+                            <div class="video-thumb">▶</div>
+                            <span>Squat — vidéo à venir</span>
+                        </div>
+
+                        <div class="video-placeholder" role="button" tabindex="0" data-exercise="Fentes">
+                            <div class="video-thumb">▶</div>
+                            <span>Fentes — vidéo à venir</span>
+                        </div>
+
+                        <div class="video-placeholder" role="button" tabindex="0" data-exercise="Gainage">
+                            <div class="video-thumb">▶</div>
+                            <span>Gainage — vidéo à venir</span>
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <article class="module-card module-card-large">
+
+                    <h3>Suivi de progression</h3>
+                    <p>Note tes séances pour visualiser ta régularité semaine après semaine.</p>
+
+                    <form class="suivi-form" id="suivi-form" novalidate>
+
+                        <div class="form-group">
+                            <label for="suivi-date">Date de la séance</label>
+                            <input type="date" id="suivi-date" name="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="suivi-type">Type de séance</label>
+                            <select id="suivi-type" name="type">
+                                <option value="Renforcement">Renforcement</option>
+                                <option value="Cardio">Cardio</option>
+                                <option value="Mobilité / étirements">Mobilité / étirements</option>
+                                <option value="Séance avec Sarah">Séance avec Sarah</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="suivi-ressenti">Ressenti</label>
+                            <select id="suivi-ressenti" name="ressenti">
+                                <option value="Facile">Facile</option>
+                                <option value="Correct">Correct</option>
+                                <option value="Difficile">Difficile</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="suivi-note">Note (optionnel)</label>
+                            <input type="text" id="suivi-note" name="note" placeholder="Ex : 3 séries de squats">
+                        </div>
+
+                        <button type="submit" class="btn-principal">
+                            Ajouter la séance
+                        </button>
+
+                    </form>
+
+                    <div class="suivi-stats" id="suivi-stats"></div>
+
+                    <ul class="suivi-liste" id="suivi-liste"></ul>
+
+                </article>
+
+                <article class="module-card module-card-large">
+
+                    <h3>Mon profil</h3>
+                    <p>Personnalise ton objectif pour que Sarah puisse t'accompagner au mieux.</p>
+
+                    <form class="profil-form" id="profil-form" novalidate>
+
+                        <div class="form-group">
+                            <label for="profil-objectif">Objectif principal</label>
+                            <select id="profil-objectif" name="objectif">
+                                <option value="Perte de poids">Perte de poids</option>
+                                <option value="Prise de muscle">Prise de muscle</option>
+                                <option value="Remise en forme générale">Remise en forme générale</option>
+                                <option value="Préparation à un événement sportif">Préparation à un événement sportif</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profil-niveau">Niveau</label>
+                            <select id="profil-niveau" name="niveau">
+                                <option value="Débutante">Débutante</option>
+                                <option value="Intermédiaire">Intermédiaire</option>
+                                <option value="Avancée">Avancée</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profil-seances">Séances par semaine souhaitées</label>
+                            <input type="number" id="profil-seances" name="seances" min="1" max="7" placeholder="Ex : 3">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profil-alimentation">Préférences alimentaires</label>
+                            <select id="profil-alimentation" name="alimentation">
+                                <option value="Aucune restriction">Aucune restriction</option>
+                                <option value="Végétarien">Végétarien</option>
+                                <option value="Végan">Végan</option>
+                                <option value="Sans gluten">Sans gluten</option>
+                                <option value="Halal">Halal</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profil-notes">Aliments à éviter / notes pour Sarah (optionnel)</label>
+                            <textarea id="profil-notes" name="notes" rows="2" placeholder="Ex : pas de produits laitiers"></textarea>
+                        </div>
+
+                        <div class="profil-actions">
+                            <button type="submit" class="btn-principal">
+                                Enregistrer mon profil
+                            </button>
+                        </div>
+
+                        <p class="form-confirmation" id="profil-confirmation" role="status" aria-live="polite"></p>
+
+                    </form>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- MODALE VIDÉO -->
+
+    <div class="video-modal" id="video-modal" hidden role="dialog" aria-modal="true" aria-labelledby="video-modal-titre">
+
+        <div class="video-modal-contenu">
+
+            <button type="button" class="video-modal-fermer" id="video-modal-fermer" aria-label="Fermer la vidéo">✕</button>
+
+            <div class="video-modal-thumb">▶</div>
+
+            <h3 id="video-modal-titre"></h3>
+
+            <p>Vidéo de démonstration à venir — remplacée bientôt par les vraies vidéos de Sarah.</p>
+
+        </div>
+
+    </div>
+
+
+    <footer class="footer">
+
+        <div class="footer-brand">
+            <h2>Fitvresse</h2>
+            <p>Bouger. Se sentir bien. Progresser.</p>
+        </div>
+
+        <div class="footer-column">
+            <h3>Navigation</h3>
+            <a href="fitvresse.html">Retour au site</a>
+        </div>
+
+        <div class="footer-column">
+            <h3>Légal</h3>
+            <a href="mentions-legales.html">Mentions légales</a>
+            <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Fitvresse. Tous droits réservés.</p>
+        </div>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

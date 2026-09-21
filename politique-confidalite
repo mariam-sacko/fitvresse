@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Politique de confidentialité — Fitvresse</title>
+
+    <meta name="description" content="Politique de confidentialité et de protection des données du site Fitvresse.">
+    <meta name="robots" content="noindex">
+
+    <link rel="stylesheet" href="fitvresse.css">
+</head>
+
+<body>
+
+    <header class="header legal-header">
+        <a href="fitvresse.html" class="logo">Fitvresse</a>
+    </header>
+
+    <main class="legal-main">
+
+        <h1>Politique de confidentialité</h1>
+        <p class="legal-maj">Dernière mise à jour : à compléter</p>
+
+        <p>
+            Cette politique explique quelles données personnelles Fitvresse collecte,
+            pourquoi, et comment tu peux exercer tes droits, conformément au RGPD
+            (Règlement Général sur la Protection des Données).
+        </p>
+
+        <h2>1. Données collectées</h2>
+        <ul>
+            <li>Formulaire de rendez-vous : prénom, nom, email, date souhaitée, message</li>
+            <li>Création de compte / connexion : prénom, nom, email, mot de passe</li>
+            <li>Profil personnel : objectif sportif, niveau, nombre de séances souhaitées, préférences alimentaires et notes libres</li>
+            <li>Suivi de progression : dates, types de séances, ressenti et notes que tu saisis toi-même</li>
+            <li>Espace coach : prénom des clientes, programmes et conseils saisis par la coach</li>
+            <li>Newsletter : adresse email</li>
+            <li>Cookies techniques et, si acceptés, cookies de mesure d'audience</li>
+        </ul>
+
+        <h2>2. Stockage local de tes données</h2>
+        <p>
+            À ce stade, ton profil, ton suivi de progression et ton choix concernant les cookies
+            sont enregistrés directement dans ton navigateur (stockage local). Ces informations
+            ne sont pas transmises à un serveur et restent sur ton appareil. Tu peux les effacer
+            à tout moment en vidant les données de navigation de ton navigateur.
+        </p>
+
+        <h2>3. Finalité du traitement</h2>
+        <ul>
+            <li>Répondre aux demandes de rendez-vous</li>
+            <li>Créer et gérer un espace personnel (programmes, profil, suivi de progression)</li>
+            <li>Permettre à la coach de préparer les programmes de ses clientes</li>
+            <li>Envoyer la newsletter aux personnes inscrites</li>
+            <li>Mesurer la fréquentation du site (si cookies acceptés)</li>
+        </ul>
+
+        <h2>4. Base légale</h2>
+        <p>
+            Les traitements reposent sur ton consentement (newsletter, cookies non essentiels)
+            et sur l'exécution d'une démarche que tu as engagée (prise de rendez-vous, création de compte).
+        </p>
+
+        <h2>5. Durée de conservation</h2>
+        <p>
+            Les données sont conservées le temps nécessaire à la gestion de la relation
+            (compte actif) et au maximum 3 ans après le dernier contact, sauf obligation
+            légale contraire. Les données stockées localement dans ton navigateur restent
+            présentes jusqu'à ce que tu les effaces toi-même.
+        </p>
+
+        <h2>6. Destinataires</h2>
+        <p>
+            Les données sont destinées uniquement à Fitvresse et, le cas échéant,
+            à ses prestataires techniques (hébergement, outil d'envoi de newsletter),
+            qui n'y ont accès que pour les besoins du service.
+        </p>
+
+        <h2>7. Cookies</h2>
+        <p>
+            Le site utilise des cookies techniques nécessaires à son fonctionnement,
+            et, avec ton accord, des cookies de mesure d'audience. Tu peux modifier
+            ton choix à tout moment en réinitialisant les cookies de ton navigateur.
+        </p>
+
+        <h2>8. Tes droits</h2>
+        <p>
+            Conformément au RGPD, tu disposes d'un droit d'accès, de rectification,
+            d'effacement, de limitation et d'opposition concernant tes données personnelles.
+            Tu peux exercer ces droits en écrivant à
+            <a href="mailto:contact@fitvresse.fr">contact@fitvresse.fr</a>.
+        </p>
+        <p>
+            Tu peux également introduire une réclamation auprès de la CNIL
+            (Commission Nationale de l'Informatique et des Libertés) si tu estimes
+            que tes droits ne sont pas respectés.
+        </p>
+
+        <h2>9. Assistante conversationnelle</h2>
+        <p>
+            L'assistante disponible sur le site fonctionne actuellement à partir de réponses
+            préenregistrées : elle n'est connectée à aucun service d'intelligence artificielle
+            et les messages que tu y saisis ne sont transmis à aucun tiers. Si une véritable
+            intelligence artificielle est intégrée par la suite, cette section sera mise à jour
+            et ton consentement sera recueilli.
+        </p>
+
+        <a href="fitvresse.html" class="legal-retour">← Retour à l'accueil</a>
+
+    </main>
+
+</body>
+
+</html>

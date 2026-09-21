@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Espace coach — Fitvresse</title>
+
+    <meta name="description" content="Espace coach Fitvresse, réservé à Sarah.">
+    <meta name="robots" content="noindex">
+
+    <link rel="stylesheet" href="fitvresse.css">
+</head>
+
+<body>
+
+    <header class="header">
+
+        <a href="fitvresse.html" class="logo">Fitvresse</a>
+
+        <div class="header-actions">
+            <a href="fitvresse.html" class="compte-link">Retour au site</a>
+            <button type="button" class="rdv-link" id="btn-deconnexion-coach">Se déconnecter</button>
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <section class="espace-coach" id="espace-coach">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="petit-titre">ESPACE COACH</p>
+                    <h2>Bonjour Sarah</h2>
+                </div>
+
+                <p>
+                    Prépare les programmes de tes clientes depuis ton espace.
+                </p>
+
+            </div>
+
+            <div class="modules-grid">
+
+                <article class="module-card module-card-large">
+
+                    <h3>Préparer un programme</h3>
+                    <p>Renseigne le programme et les conseils pour une cliente.</p>
+
+                    <form class="coach-form" id="coach-form" novalidate>
+
+                        <div class="form-group">
+                            <label for="coach-cliente">Prénom de la cliente</label>
+                            <input type="text" id="coach-cliente" name="cliente" placeholder="Ex : Léa" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coach-programme">Programme d'entraînement</label>
+                            <textarea id="coach-programme" name="programme" rows="3" placeholder="Ex : 3 séances/semaine, focus bas du corps..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coach-nutrition">Conseils nutrition</label>
+                            <textarea id="coach-nutrition" name="nutrition" rows="3" placeholder="Ex : privilégier les repas complets avant l'entraînement..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-principal">
+                            Enregistrer pour la cliente
+                        </button>
+
+                        <p class="form-confirmation" id="coach-confirmation" role="status" aria-live="polite"></p>
+
+                    </form>
+
+                </article>
+
+                <article class="module-card module-card-large">
+
+                    <h3>Programmes enregistrés</h3>
+                    <p>Les programmes que tu as préparés.</p>
+
+                    <ul class="coach-liste" id="coach-liste"></ul>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="footer-brand">
+            <h2>Fitvresse</h2>
+            <p>Bouger. Se sentir bien. Progresser.</p>
+        </div>
+
+        <div class="footer-column">
+            <h3>Navigation</h3>
+            <a href="fitvresse.html">Retour au site</a>
+        </div>
+
+        <div class="footer-column">
+            <h3>Légal</h3>
+            <a href="mentions-legales.html">Mentions légales</a>
+            <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Fitvresse. Tous droits réservés.</p>
+        </div>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
