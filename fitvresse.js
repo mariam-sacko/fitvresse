@@ -14,8 +14,8 @@
 ========================================================= */
 
 // À MODIFIER : remplace par ton Project URL et ta clé anon/publishable
-const SUPABASE_URL = "https://TON-PROJET.supabase.co";
-const SUPABASE_ANON_KEY = "TA-CLE-ANON";
+const SUPABASE_URL = ""https://mphgxlqsecwrrybgsvbw.supabase.co;
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1waGd4bHFzZWN3cnJ5YmdzdmJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwMjQ4MTQsImV4cCI6MjEwNTYwMDgxNH0.AuOPaSxDGcxpGKDCt-NDx9bjC4tJMKpITvtkT9kmQhM";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
