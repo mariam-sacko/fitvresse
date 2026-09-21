@@ -321,7 +321,7 @@ function initAssistanteIA() {
       event.preventDefault();
 
       // À MODIFIER : l'adresse de ton Worker Cloudflare
-      const URL_ASSISTANTE = "https://fitvresse-ia.TON-NOM.workers.dev";
+      const URL_ASSISTANTE = "https://fitvresse-ia.mariamsacko-dev.workers.dev";
 
       const question = iaInput.value.trim();
 
