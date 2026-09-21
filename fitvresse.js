@@ -352,7 +352,7 @@ function initAssistanteIA() {
           body: JSON.stringify({ question: question })
         });
 
-                const data = await response.json();
+        const data = await response.json();
 
         messageBot.textContent = response.ok && data.reponse
           ? data.reponse
@@ -360,13 +360,8 @@ function initAssistanteIA() {
 
       } catch (erreur) {
 
+        // DEBUG temporaire : à retirer quand l'IA fonctionne
         messageBot.textContent = "[DEBUG réseau : " + erreur.message + "] " + genererReponse(question);
-
-      }
-catch (erreur) {
-
-        // Si l'IA est indisponible, on garde les réponses à mots-clés
-        messageBot.textContent = genererReponse(question);
 
       }
 
@@ -1059,6 +1054,3 @@ function initEspaceCoach() {
   afficher();
 
 }
-
-
-    
