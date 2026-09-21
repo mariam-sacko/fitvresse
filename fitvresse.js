@@ -352,13 +352,18 @@ function initAssistanteIA() {
           body: JSON.stringify({ question: question })
         });
 
-        const data = await response.json();
+                const data = await response.json();
 
         messageBot.textContent = response.ok && data.reponse
           ? data.reponse
-          : genererReponse(question);
+          : "[DEBUG " + response.status + "] " + (data.reponse || "") + " — " + genererReponse(question);
 
       } catch (erreur) {
+
+        messageBot.textContent = "[DEBUG réseau : " + erreur.message + "] " + genererReponse(question);
+
+      }
+catch (erreur) {
 
         // Si l'IA est indisponible, on garde les réponses à mots-clés
         messageBot.textContent = genererReponse(question);
