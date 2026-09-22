@@ -17,7 +17,28 @@
 const SUPABASE_URL = "https://mphgxlqsecwrrybgsvbw.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1waGd4bHFzZWN3cnJ5YmdzdmJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwMjQ4MTQsImV4cCI6MjEwNTYwMDgxNH0.AuOPaSxDGcxpGKDCt-NDx9bjC4tJMKpITvtkT9kmQhM";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Cette étape ne doit jamais bloquer le reste du site : si la librairie
+// Supabase ne s'est pas chargée (mauvais ordre des <script>, CDN bloqué...),
+// on affiche un avertissement au lieu de planter toute la page.
+let sb = null;
+
+if (window.supabase && typeof window.supabase.createClient === "function") {
+
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (erreur) {
+    console.error("Supabase : erreur de connexion.", erreur);
+  }
+
+} else {
+
+  console.error(
+    "Supabase : la librairie n'est pas chargée. Vérifie que " +
+    "<script src=\"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js\"></script> " +
+    "est bien présent AVANT <script src=\"fitvresse.js\"></script> dans le HTML."
+  );
+
+}
 
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -533,6 +554,13 @@ function initCompte() {
   ongletConnexion.addEventListener("click", afficherConnexion);
   ongletInscription.addEventListener("click", afficherInscription);
 
+  if (!sb) {
+    if (compteConfirmation) {
+      compteConfirmation.textContent = "Connexion indisponible pour le moment.";
+    }
+    return;
+  }
+
   // Redirige la personne selon son rôle (lu dans la table "profils")
   async function redirigerSelonRole(userId) {
 
@@ -822,6 +850,10 @@ function initSessionEspace() {
 
   const surPageCoach = !!btnDeconnexionCoach;
 
+  if (!sb) {
+    return;
+  }
+
   async function verifierSession() {
 
     const { data: { session } } = await sb.auth.getSession();
@@ -888,6 +920,10 @@ function initSuiviProgression() {
 
   const suiviListe = document.querySelector("#suivi-liste");
   const suiviStats = document.querySelector("#suivi-stats");
+
+  if (!sb) {
+    return;
+  }
 
   async function chargerSeances() {
 
@@ -1039,6 +1075,10 @@ function initProfil() {
     notes: document.querySelector("#profil-notes")
   };
 
+  if (!sb) {
+    return;
+  }
+
   async function precharger() {
 
     const { data: { session } } = await sb.auth.getSession();
@@ -1115,6 +1155,10 @@ function initEspaceCoach() {
   const coachConfirmation = document.querySelector("#coach-confirmation");
   const coachListe = document.querySelector("#coach-liste");
   const clienteChamp = document.querySelector("#coach-cliente");
+
+  if (!sb) {
+    return;
+  }
 
   // Remplit la liste des clientes si #coach-cliente est un <select>
   async function chargerClientes() {
